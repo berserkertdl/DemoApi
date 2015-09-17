@@ -27,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_activity_);
 
+        Intent intent = new Intent("com.location.service.action");
+        sendBroadcast(intent);
+
         findViewById(R.id.start_loca_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -39,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this,LocationService.class);
-                intent.setAction(LocationService.START_SERVICE);
+                intent.setAction(LocationService.STOP_SERVICE);
                 startService(intent);
             }
         });
@@ -53,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         L.i(TAG, sHA1(this));
+
+        moveTaskToBack(true);  // 运行后自动返回，不让主人看到主界面
 
     }
 

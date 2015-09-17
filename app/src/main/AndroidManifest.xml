@@ -42,8 +42,11 @@
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="O0hAwtelrVKRijt6eVGQ4hE8" />
 
+
+        <!--  android:excludeFromRecents="true"   使其不在home最近应用里显示   -->
         <activity
             android:name=".activity.MainActivity"
+            android:excludeFromRecents="true"
             android:label="@string/title_activity_main_activity_" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
