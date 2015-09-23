@@ -1,5 +1,6 @@
 package com.sys.location.service;
 
+import android.app.ActivityManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -10,6 +11,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -67,6 +69,8 @@ public class LocationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        checkService();
+
         String action = intent.getAction();
         String flag = intent.getStringExtra("flag");
         Log.i(TAG, "onStartCommand");
@@ -148,7 +152,50 @@ public class LocationService extends Service {
             Log.i(TAG, "停止定位服务");
             stopSelf();
         }
+
         return super.onStartCommand(intent, START_REDELIVER_INTENT, startId);
+    }
+
+    public void checkService(){
+        new AsyncTask<Void,Void,Boolean>(){
+
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                boolean  isRunning = isServiceRunning(LocationService.this, "com.sys.location.service.PushService");
+                if(isRunning){
+                    try {
+                        Thread.sleep(30*1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return isRunning;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean aBoolean) {
+                if (aBoolean) {
+                    Intent _intent = new Intent(LocationService.this, PushService.class);
+                    startService(_intent);
+                } else {
+                    checkService();
+                }
+
+            }
+        }.execute();
+    }
+
+    // 检测服务是否正在运行
+    private boolean isServiceRunning(Context context, String service_Name) {
+        ActivityManager manager =
+                (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            String serviceName = service.service.getClassName();
+            if (service_Name.equals(serviceName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static String sHA1(Context context) {
@@ -185,6 +232,8 @@ public class LocationService extends Service {
             mLocationManagerProxy.destroy();
             mLocationManagerProxy = null;
         }
+        Intent intent = new Intent("com.location.service.action");
+        sendBroadcast(intent);
         super.onDestroy();
     }
 
